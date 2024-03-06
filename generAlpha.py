@@ -21,6 +21,7 @@ for i in amele:
     num_rows.append(len(file))
 longest_row = max(num_rows)
 
+output = []
 for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi yok
     pairs = {}
     portfollio = pd.DataFrame()
@@ -48,7 +49,7 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
         normalize_fk = (data_frame['F/K'] - min_fk) / (max_fk - min_fk)
         fk_puan = 1 - normalize_fk
         fk_puan = fk_puan.apply(lambda x: 0 if x >= 1 or x <= 0 else x)
-        data_frame['F/K Puan'] = fk_puan
+        data_frame['F/K Puan'] = fk_puan.round(5)
 
         data_frame['PD/DD'] = data_frame['PD/DD'].apply(lambda x: 0 if x >= 100 or x <= 0 else x)
         min_pd_dd = 0
@@ -56,32 +57,32 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
         normalize_pd_dd = (data_frame['PD/DD'] - min_pd_dd) / (max_pd_dd - min_pd_dd)
         pd_dd_puan = 1 - normalize_pd_dd
         pd_dd_puan = pd_dd_puan.apply(lambda x: 0 if x >= 1 or x <= 0 else x)
-        data_frame['PD/DD Puan'] = pd_dd_puan
+        data_frame['PD/DD Puan'] = pd_dd_puan.round(5)
 
         data_frame['Cari Oran'] = data_frame['Cari Oran'].apply(lambda x: 200 if x >= 200 else (0 if x <= 0 else x))
         min_cari_oran = 0
         max_cari_oran = 200.01
         normalize_cari_oran = (data_frame['Cari Oran'] - min_cari_oran) / (max_cari_oran - min_cari_oran)
-        data_frame['Cari Oran Puan'] = normalize_cari_oran
+        data_frame['Cari Oran Puan'] = normalize_cari_oran.round(5)
 
         kaldirac_orani_puan = 1 - data_frame['Kaldıraç Oranı']
         kaldirac_orani_puan = kaldirac_orani_puan.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x))
-        data_frame['Kaldıraç Oranı Puan'] = kaldirac_orani_puan
+        data_frame['Kaldıraç Oranı Puan'] = kaldirac_orani_puan.round(5)
 
         brut_kar_ceyrek_percentage_change = (data_frame['Brüt Kar Marjı Çeyreklik'] - copy_df['Brüt Kar Marjı Çeyreklik']) /  data_frame['Brüt Kar Marjı Çeyreklik']
-        data_frame['Brüt Kar Marjı Çeyreklik Puan'] = brut_kar_ceyrek_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x))
+        data_frame['Brüt Kar Marjı Çeyreklik Puan'] = brut_kar_ceyrek_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x)).round(5)
 
         brut_kar_yil_percentage_change = (data_frame['Brüt Kar Marjı Yıllık'] - copy_df['Brüt Kar Marjı Yıllık']) /  data_frame['Brüt Kar Marjı Yıllık']
-        data_frame['Brüt Kar Marjı Yıllık Puan'] = brut_kar_yil_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x))
+        data_frame['Brüt Kar Marjı Yıllık Puan'] = brut_kar_yil_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x)).round(5)
 
         net_kar_ceyrek_percentage_change = (data_frame['Net Kar Marjı Çeyreklik'] - copy_df['Net Kar Marjı Çeyreklik']) /  data_frame['Net Kar Marjı Çeyreklik']
-        data_frame['Net Kar Marjı Çeyreklik Puan'] = net_kar_ceyrek_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x))
+        data_frame['Net Kar Marjı Çeyreklik Puan'] = net_kar_ceyrek_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x)).round(5)
 
         net_kar_yil_percentage_change = (data_frame['Net Kar Marjı Yıllık'] - copy_df['Net Kar Marjı Yıllık']) /  data_frame['Net Kar Marjı Yıllık']
-        data_frame['Net Kar Marjı Yıllık Puan'] = net_kar_yil_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x))
+        data_frame['Net Kar Marjı Yıllık Puan'] = net_kar_yil_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x)).round(5)
 
         ozkaynak_percentage_change = (data_frame['Özkaynak Karlılığı'] - copy_df['Özkaynak Karlılığı']) /  data_frame['Özkaynak Karlılığı']
-        data_frame['Özkaynak Karlılığı Puan'] = ozkaynak_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x))
+        data_frame['Özkaynak Karlılığı Puan'] = ozkaynak_percentage_change.apply(lambda x: 0 if x <= 0 else (1 if x >= 1 else x)).round(5)
 
         data_frame = data_frame[:-4]
 
@@ -91,7 +92,7 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
 
         last_trading_day = '2024/02/15'
         #Checking Criterias
-        if ((in_query['F/K Puan'] > 0.98) & (in_query['PD/DD Puan'] > 0.98)).any():
+        if (in_query['F/K Puan'] > 0.98).any():
             yfstock = file_name + '.IS'
             file_buy_date = pd.read_excel('/home/gun/Documents/Amele/RaporTarihleri/{}.xlsx'.format(file_name)).T
             file_buy_date = file_buy_date[0].iloc[1:]
@@ -130,12 +131,13 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
                     buy_price = round(data.iloc[0], 2)
 
                 #Get The Closest Trading Date in YF, limited to 10 days to prevent loop for the earliest date in the file
-                elif 0 < buy_day_difference <= 10:
+                elif 0 <= buy_day_difference <= 10:
                     buy_date = data.index[0]
                     buy_date = buy_date.strftime('%Y-%m-%d')
                     buy_price = round(data.iloc[0], 2)
 
                 else:
+                    buy_date = buy_date.strftime('%Y-%m-%d')
                     buy_price = 0
                 
                 #Adjusting Sell Date According To YF_Dates If Sell Date Is Abnormal Holiday
@@ -149,11 +151,12 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
 
                 #Get The Closest Trading Date in YF, limited to 10 days to prevent loop for the earliest date in the file
                 elif 0 < sell_day_difference <= 10:
-                    sell_date = closest_index
                     sell_price = round(data[closest_index], 2)
+                    sell_date = closest_index
 
                 else:
                     sell_price = 0
+                    sell_date = closest_index
 
                 # print(yfstock)
                 # print(buy_date)
@@ -161,7 +164,15 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
                 # print(sell_date)
                 # print(sell_price)
 
-                position_pnl = ((sell_price - buy_price) / buy_price) * 100
+                if buy_price and sell_price != 0:
+                    position_pnl = ((sell_price - buy_price) / buy_price) * 100
+                    position_pnl = round(position_pnl, 5)
+
+                elif buy_price == 0:
+                    position_pnl = 0
+
+                else:
+                    position_pnl = 0
 
                 in_query['Alış Tarihi'] = buy_date
                 in_query['Alış Fiyatı'] = buy_price
@@ -178,5 +189,16 @@ for row in range(longest_row -4): #Row -4 because son marjlarin 4 ceyrek oncesi 
             continue
 
         portfollio = portfollio.sort_values(by='Alış Tarihi', ascending=True)
-    show(portfollio)
+
+        if len(portfollio) > 10:
+            portfollio = portfollio[:10]
+
+        else:
+            continue
+
+    output.append(portfollio)
+    # show(portfollio)
     # break
+df = pd.concat(output, axis=0)
+df.to_excel('/home/gun/Documents/Siralamalar/DefaultAgirlik/BilancoToBilanco/SingleRatioSorts/F_K098.xlsx', sheet_name="FK Only", index=True)
+# show(df)
